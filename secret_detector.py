@@ -1,5 +1,5 @@
 """
-敏感信息检测模块
+Sensitive information detection module
 """
 import re
 from typing import List, Dict, Optional
@@ -7,14 +7,14 @@ from config import SENSITIVE_PATTERNS, EXCLUDED_EXTENSIONS, EXCLUDED_DIRS
 
 
 class SecretDetector:
-    """敏感信息检测器"""
-    
+    """Sensitive information detector"""
+
     def __init__(self, patterns: List[str] = SENSITIVE_PATTERNS):
         """
-        初始化检测器
-        
+        Initialize detector
+
         Args:
-            patterns: 正则表达式模式列表
+            patterns: List of regular expression patterns
         """
         self.patterns = [re.compile(pattern) for pattern in patterns]
         self.excluded_extensions = EXCLUDED_EXTENSIONS
@@ -22,55 +22,55 @@ class SecretDetector:
     
     def should_scan_file(self, file_path: str) -> bool:
         """
-        判断文件是否应该被扫描
-        
+        Determine if file should be scanned
+
         Args:
-            file_path: 文件路径
-            
+            file_path: File path
+
         Returns:
-            是否应该扫描
+            Whether file should be scanned
         """
-        # 检查文件扩展名
+        # Check file extension
         for ext in self.excluded_extensions:
             if file_path.lower().endswith(ext):
                 return False
-        
-        # 检查目录
+
+        # Check directory
         path_parts = file_path.split('/')
         for excluded_dir in self.excluded_dirs:
             if excluded_dir in path_parts:
                 return False
-        
+
         return True
     
     def detect_secrets_in_text(self, text: str, file_path: str = "") -> List[Dict]:
         """
-        在文本中检测敏感信息
-        
+        Detect sensitive information in text
+
         Args:
-            text: 要检测的文本内容
-            file_path: 文件路径（用于报告）
-            
+            text: Text content to detect
+            file_path: File path (for reporting)
+
         Returns:
-            检测到的敏感信息列表
+            List of detected sensitive information
         """
         if not text:
             return []
-        
+
         findings = []
         lines = text.split('\n')
-        
+
         for line_num, line in enumerate(lines, 1):
             for pattern in self.patterns:
                 matches = pattern.finditer(line)
                 for match in matches:
-                    # 提取匹配的密钥
+                    # Extract matched secret
                     secret = match.group(0)
-                    
-                    # 检查是否是注释或示例
+
+                    # Check if it's a comment or example
                     if self._is_likely_example(line, secret):
                         continue
-                    
+
                     findings.append({
                         'file_path': file_path,
                         'line_number': line_num,
@@ -79,100 +79,100 @@ class SecretDetector:
                         'pattern': pattern.pattern,
                         'confidence': self._calculate_confidence(secret, line)
                     })
-        
+
         return findings
     
     def _is_likely_example(self, line: str, secret: str) -> bool:
         """
-        判断是否可能是示例代码
-        
+        Determine if likely example code
+
         Args:
-            line: 代码行
-            secret: 检测到的密钥
-            
+            line: Code line
+            secret: Detected secret
+
         Returns:
-            是否可能是示例
+            Whether likely an example
         """
         line_lower = line.lower()
-        
-        # 检查是否包含示例相关的关键词
+
+        # Check for example-related keywords
         example_keywords = [
             'example', 'sample', 'demo', 'test', 'placeholder',
             'your_api_key', 'your-api-key', 'xxx', 'yyy',
             'todo', 'replace', 'change_me', 'changeme'
         ]
-        
+
         for keyword in example_keywords:
             if keyword in line_lower:
                 return True
-        
-        # 检查密钥是否包含明显的占位符模式
+
+        # Check if secret contains obvious placeholder patterns
         placeholder_patterns = [
-            r'x{10,}',  # 多个x
-            r'_+',      # 多个下划线
-            r'\*{3,}',  # 多个星号
+            r'x{10,}',  # Multiple x's
+            r'_+',      # Multiple underscores
+            r'\*{3,}',  # Multiple asterisks
         ]
-        
+
         for pattern in placeholder_patterns:
             if re.search(pattern, secret, re.IGNORECASE):
                 return True
-        
+
         return False
     
     def _calculate_confidence(self, secret: str, line: str) -> str:
         """
-        计算置信度
-        
+        Calculate confidence level
+
         Args:
-            secret: 检测到的密钥
-            line: 代码行
-            
+            secret: Detected secret
+            line: Code line
+
         Returns:
-            置信度等级 (high/medium/low)
+            Confidence level (high/medium/low)
         """
-        # 高置信度：密钥格式完整且不在注释中
-        if (secret.startswith('sk-') and len(secret) > 40 and 
-            not line.strip().startswith('#') and 
+        # High confidence: complete key format and not in comments
+        if (secret.startswith('sk-') and len(secret) > 40 and
+            not line.strip().startswith('#') and
             not line.strip().startswith('//')):
             return 'high'
-        
-        # 中等置信度：符合基本模式
+
+        # Medium confidence: matches basic pattern
         if len(secret) >= 30:
             return 'medium'
-        
-        # 低置信度
+
+        # Low confidence
         return 'low'
     
     def filter_high_confidence(self, findings: List[Dict]) -> List[Dict]:
         """
-        过滤出高置信度的发现
-        
+        Filter out high confidence findings
+
         Args:
-            findings: 检测结果列表
-            
+            findings: List of detection results
+
         Returns:
-            高置信度的结果
+            High confidence results
         """
         return [f for f in findings if f['confidence'] in ['high', 'medium']]
-    
+
     def deduplicate_findings(self, findings: List[Dict]) -> List[Dict]:
         """
-        去除重复的发现
-        
+        Remove duplicate findings
+
         Args:
-            findings: 检测结果列表
-            
+            findings: List of detection results
+
         Returns:
-            去重后的结果
+            Deduplicated results
         """
         seen = set()
         unique_findings = []
-        
+
         for finding in findings:
-            # 使用secret和file_path作为唯一标识
+            # Use secret and file_path as unique identifier
             key = (finding['secret'], finding['file_path'])
             if key not in seen:
                 seen.add(key)
                 unique_findings.append(finding)
-        
+
         return unique_findings
