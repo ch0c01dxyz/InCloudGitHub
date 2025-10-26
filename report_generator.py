@@ -1,10 +1,12 @@
 """
 Report generation module
+Version: 2.1.0 (Production Ready with Multi-format Export)
 """
 import os
+import json
 from datetime import datetime
-from typing import List, Dict
-from config import OUTPUT_DIR
+from typing import List, Dict, Optional
+from config import OUTPUT_DIR, PRODUCTION_MODE
 
 
 class ReportGenerator:
@@ -145,9 +147,15 @@ class ReportGenerator:
             repo_url: Repository URL
             findings: List of findings for this repository
         """
-        # Extract repository name
-        repo_name = repo_url.split('/')[-2:] if '/' in repo_url else [repo_url]
-        repo_name = '/'.join(repo_name) if len(repo_name) == 2 else repo_url
+        # Extract repository name with validation
+        try:
+            parts = repo_url.split('/') if '/' in repo_url else []
+            if len(parts) >= 2:
+                repo_name = '/'.join(parts[-2:])
+            else:
+                repo_name = repo_url
+        except (IndexError, AttributeError):
+            repo_name = str(repo_url)
 
         # Calculate risk level
         high_count = sum(1 for f in findings if f.get('confidence') == 'high')
@@ -196,10 +204,11 @@ class ReportGenerator:
 
             # Code context
             if finding.get('line_content'):
-                line_content = finding['line_content'].strip()[:80]
-                f.write(f"  │\n")
-                f.write(f"  │ 💻 Code Snippet:\n")
-                f.write(f"  │    {line_content}\n")
+                line_content = str(finding.get('line_content', '')).strip()[:80]
+                if line_content:
+                    f.write(f"  │\n")
+                    f.write(f"  │ 💻 Code Snippet:\n")
+                    f.write(f"  │    {line_content}\n")
 
             # Scan time
             if finding.get('scan_time'):
@@ -213,7 +222,7 @@ class ReportGenerator:
     
     def _identify_secret_type(self, secret: str) -> str:
         """
-        Identify secret type
+        Identify secret type with comprehensive coverage
 
         Args:
             secret: Secret string
@@ -221,22 +230,126 @@ class ReportGenerator:
         Returns:
             Secret type description
         """
+        secret_lower = secret.lower()
+
+        # === AI/ML Services ===
         if secret.startswith('sk-proj-'):
             return '🤖 OpenAI API Key (Project)'
         elif secret.startswith('sk-ant-'):
             return '🤖 Anthropic API Key (Claude)'
+        elif secret.startswith('sk_live_'):
+            return '💳 Stripe Live Secret Key'
+        elif secret.startswith('sk_test_'):
+            return '💳 Stripe Test Secret Key'
         elif secret.startswith('sk-'):
             return '🤖 OpenAI API Key'
         elif secret.startswith('AIza'):
             return '🔍 Google AI API Key (Gemini)'
-        elif 'openai' in secret.lower():
+        elif secret.startswith('gsk_'):
+            return '🤖 Groq API Key'
+        elif secret.startswith('r8_'):
+            return '🤖 Replicate API Token'
+        elif secret.startswith('hf_'):
+            return '🤗 Hugging Face Token'
+
+        # === Cloud Providers ===
+        elif secret.startswith('AKIA'):
+            return '☁️ AWS Access Key ID'
+        elif secret.startswith('ghp_'):
+            return '🐙 GitHub Personal Access Token'
+        elif secret.startswith('gho_'):
+            return '🐙 GitHub OAuth Token'
+        elif secret.startswith('ghs_'):
+            return '🐙 GitHub Server Token'
+        elif secret.startswith('glpat-'):
+            return '🦊 GitLab Personal Access Token'
+
+        # === Communication Services ===
+        elif secret.startswith('xox'):
+            return '💬 Slack Token'
+        elif secret.startswith('SG.'):
+            return '📧 SendGrid API Key'
+        elif 'discord' in secret_lower and 'webhook' in secret_lower:
+            return '🎮 Discord Webhook URL'
+        elif 'slack' in secret_lower and 'webhook' in secret_lower:
+            return '💬 Slack Webhook URL'
+
+        # === Package Managers ===
+        elif secret.startswith('npm_'):
+            return '📦 npm Token'
+        elif secret.startswith('pypi-'):
+            return '🐍 PyPI Token'
+
+        # === Private Keys ===
+        elif '-----BEGIN' in secret:
+            if 'RSA PRIVATE KEY' in secret:
+                return '🔐 RSA Private Key'
+            elif 'OPENSSH PRIVATE KEY' in secret:
+                return '🔐 OpenSSH Private Key'
+            elif 'PRIVATE KEY' in secret:
+                return '🔐 Private Key'
+            elif 'PGP PRIVATE KEY' in secret:
+                return '🔐 PGP Private Key'
+        elif secret.startswith('ssh-'):
+            return '🔑 SSH Public Key'
+
+        # === Database Connections ===
+        elif secret.startswith('postgresql://') or secret.startswith('postgres://'):
+            return '🗄️ PostgreSQL Connection String'
+        elif 'mongodb' in secret_lower:
+            return '🗄️ MongoDB Connection String'
+        elif secret.startswith('mysql://'):
+            return '🗄️ MySQL Connection String'
+        elif secret.startswith('redis://'):
+            return '🗄️ Redis Connection String'
+
+        # === JWT Tokens ===
+        elif secret.count('.') == 2 and secret.startswith('eyJ'):
+            return '🎫 JWT Token'
+
+        # === Service-Specific (by keyword) ===
+        elif 'openai' in secret_lower:
             return '🤖 OpenAI-related Key'
-        elif 'anthropic' in secret.lower() or 'claude' in secret.lower():
+        elif 'anthropic' in secret_lower or 'claude' in secret_lower:
             return '🤖 Anthropic-related Key'
-        elif 'api_key' in secret.lower() or 'apikey' in secret.lower():
+        elif 'groq' in secret_lower:
+            return '🤖 Groq-related Key'
+        elif 'mistral' in secret_lower:
+            return '🤖 Mistral AI Key'
+        elif 'gemini' in secret_lower or 'google' in secret_lower:
+            return '🔍 Google AI Key'
+        elif 'azure' in secret_lower:
+            return '☁️ Azure Credential'
+        elif 'aws' in secret_lower:
+            return '☁️ AWS Credential'
+        elif 'stripe' in secret_lower:
+            return '💳 Stripe Key'
+        elif 'twilio' in secret_lower:
+            return '📱 Twilio Credential'
+        elif 'firebase' in secret_lower:
+            return '🔥 Firebase Key'
+        elif 'supabase' in secret_lower:
+            return '⚡ Supabase Key'
+        elif 'pinecone' in secret_lower:
+            return '📊 Pinecone API Key'
+        elif 'langchain' in secret_lower or 'langsmith' in secret_lower:
+            return '🦜 LangChain/LangSmith Key'
+        elif 'huggingface' in secret_lower or 'hugging' in secret_lower:
+            return '🤗 Hugging Face Key'
+        elif 'cohere' in secret_lower:
+            return '🤖 Cohere API Key'
+        elif 'wandb' in secret_lower:
+            return '📊 Weights & Biases Key'
+        elif 'replicate' in secret_lower:
+            return '🤖 Replicate Token'
+        elif 'bearer' in secret_lower:
+            return '🎫 Bearer Token'
+        elif 'session_secret' in secret_lower or 'secret_key' in secret_lower:
+            return '🔐 Session/Secret Key'
+        elif 'api_key' in secret_lower or 'apikey' in secret_lower:
             return '🔑 Generic API Key'
         else:
-            return '🔐 Unknown Key Type'
+            return '🔐 Unknown Secret Type'
     
     def _explain_pattern(self, pattern: str) -> str:
         """
@@ -248,45 +361,157 @@ class ReportGenerator:
         Returns:
             Readable pattern description
         """
-        # Specific key formats
+        # === AI/ML Service Specific Patterns ===
         if 'sk-proj-' in pattern:
             return '📌 OpenAI Project API Key format (sk-proj-...)'
         elif 'sk-ant-' in pattern:
             return '📌 Anthropic Claude API Key format (sk-ant-...)'
+        elif 'sk_live_' in pattern or 'sk_test_' in pattern:
+            return '📌 Stripe API Key format'
         elif pattern == r'sk-[a-zA-Z0-9]{32,}':
             return '📌 OpenAI API Key format (sk-...)'
         elif 'AIza' in pattern:
             return '📌 Google AI/Gemini API Key format (AIza...)'
+        elif 'gsk_' in pattern:
+            return '📌 Groq API Key format (gsk_...)'
+        elif 'r8_' in pattern:
+            return '📌 Replicate API Token format (r8_...)'
+        elif 'hf_' in pattern:
+            return '📌 Hugging Face Token format (hf_...)'
 
-        # Environment variable patterns
+        # === Cloud Provider Patterns ===
+        elif 'AKIA' in pattern:
+            return '📌 AWS Access Key ID format (AKIA...)'
+        elif 'AWS_ACCESS_KEY_ID' in pattern:
+            return '📌 AWS_ACCESS_KEY_ID environment variable'
+        elif 'AWS_SECRET_ACCESS_KEY' in pattern:
+            return '📌 AWS_SECRET_ACCESS_KEY environment variable'
+        elif 'AZURE_CLIENT_SECRET' in pattern:
+            return '📌 AZURE_CLIENT_SECRET environment variable'
+        elif 'AZURE_' in pattern:
+            return '📌 Azure credential environment variable'
+
+        # === GitHub/GitLab Patterns ===
+        elif 'ghp_' in pattern:
+            return '📌 GitHub Personal Access Token format (ghp_...)'
+        elif 'gho_' in pattern:
+            return '📌 GitHub OAuth Token format (gho_...)'
+        elif 'ghs_' in pattern:
+            return '📌 GitHub Server Token format (ghs_...)'
+        elif 'glpat-' in pattern:
+            return '📌 GitLab Personal Access Token format'
+        elif 'GITHUB_TOKEN' in pattern:
+            return '📌 GITHUB_TOKEN environment variable'
+        elif 'GITLAB_TOKEN' in pattern:
+            return '📌 GITLAB_TOKEN environment variable'
+
+        # === Database Connection Patterns ===
+        elif 'postgresql://' in pattern or 'postgres://' in pattern:
+            return '📌 PostgreSQL connection string'
+        elif 'mongodb' in pattern.lower():
+            return '📌 MongoDB connection string'
+        elif 'mysql://' in pattern:
+            return '📌 MySQL connection string'
+        elif 'redis://' in pattern:
+            return '📌 Redis connection string'
+
+        # === Private Key Patterns ===
+        elif 'BEGIN RSA PRIVATE KEY' in pattern:
+            return '📌 RSA Private Key'
+        elif 'BEGIN OPENSSH PRIVATE KEY' in pattern:
+            return '📌 OpenSSH Private Key'
+        elif 'BEGIN PRIVATE KEY' in pattern:
+            return '📌 Private Key (Generic)'
+        elif 'ssh-rsa' in pattern or 'ssh-ed25519' in pattern:
+            return '📌 SSH Public Key'
+
+        # === Communication Service Patterns ===
+        elif 'xox' in pattern:
+            return '📌 Slack Token format'
+        elif 'SG.' in pattern:
+            return '📌 SendGrid API Key format'
+        elif 'discord' in pattern.lower() and 'webhook' in pattern.lower():
+            return '📌 Discord Webhook URL'
+        elif 'SLACK_WEBHOOK' in pattern:
+            return '📌 Slack Webhook URL'
+        elif 'TELEGRAM_BOT_TOKEN' in pattern:
+            return '📌 Telegram Bot Token'
+
+        # === AI Service Environment Variables ===
         elif 'OPENAI_API_KEY' in pattern:
-            return '📌 OPENAI_API_KEY environment variable assignment'
-        elif 'AI_API_KEY' in pattern and 'OPENAI' not in pattern:
-            return '📌 AI_API_KEY environment variable assignment'
+            return '📌 OPENAI_API_KEY environment variable'
         elif 'ANTHROPIC_AUTH_TOKEN' in pattern:
-            return '📌 ANTHROPIC_AUTH_TOKEN environment variable assignment'
+            return '📌 ANTHROPIC_AUTH_TOKEN environment variable'
         elif 'ANTHROPIC_API_KEY' in pattern:
-            return '📌 ANTHROPIC_API_KEY environment variable assignment'
+            return '📌 ANTHROPIC_API_KEY environment variable'
         elif 'CLAUDE_API_KEY' in pattern:
-            return '📌 CLAUDE_API_KEY environment variable assignment'
-        elif 'CHAT_API_KEY' in pattern:
-            return '📌 CHAT_API_KEY environment variable assignment'
+            return '📌 CLAUDE_API_KEY environment variable'
         elif 'GOOGLE_API_KEY' in pattern:
-            return '📌 GOOGLE_API_KEY environment variable assignment'
+            return '📌 GOOGLE_API_KEY environment variable'
         elif 'GEMINI_API_KEY' in pattern:
-            return '📌 GEMINI_API_KEY environment variable assignment'
-        elif 'AZURE_OPENAI' in pattern:
-            return '📌 Azure OpenAI environment variable assignment'
+            return '📌 GEMINI_API_KEY environment variable'
+        elif 'GROQ_API_KEY' in pattern:
+            return '📌 GROQ_API_KEY environment variable'
+        elif 'MISTRAL_API_KEY' in pattern:
+            return '📌 MISTRAL_API_KEY environment variable'
+        elif 'REPLICATE_API_TOKEN' in pattern:
+            return '📌 REPLICATE_API_TOKEN environment variable'
+        elif 'LANGCHAIN_API_KEY' in pattern or 'LANGSMITH_API_KEY' in pattern:
+            return '📌 LangChain/LangSmith API Key'
         elif 'HUGGINGFACE_API_KEY' in pattern:
-            return '📌 HUGGINGFACE_API_KEY environment variable assignment'
+            return '📌 HUGGINGFACE_API_KEY environment variable'
         elif 'HF_TOKEN' in pattern:
-            return '📌 HF_TOKEN environment variable assignment'
+            return '📌 HF_TOKEN environment variable'
         elif 'COHERE_API_KEY' in pattern:
-            return '📌 COHERE_API_KEY environment variable assignment'
-        elif 'API_KEY' in pattern and 'api_key' in pattern:
-            return '📌 API_KEY/api_key environment variable assignment'
+            return '📌 COHERE_API_KEY environment variable'
+        elif 'WANDB_API_KEY' in pattern:
+            return '📌 Weights & Biases API Key'
 
-        # camelCase/PascalCase patterns
+        # === Vector Database Patterns ===
+        elif 'PINECONE_API_KEY' in pattern:
+            return '📌 Pinecone API Key'
+        elif 'WEAVIATE_API_KEY' in pattern:
+            return '📌 Weaviate API Key'
+        elif 'QDRANT_API_KEY' in pattern:
+            return '📌 Qdrant API Key'
+
+        # === Other Service Patterns ===
+        elif 'STRIPE_SECRET_KEY' in pattern:
+            return '📌 Stripe Secret Key'
+        elif 'TWILIO_' in pattern:
+            return '📌 Twilio Credential'
+        elif 'SENDGRID_API_KEY' in pattern:
+            return '📌 SendGrid API Key'
+        elif 'FIREBASE_API_KEY' in pattern:
+            return '📌 Firebase API Key'
+        elif 'SUPABASE_' in pattern:
+            return '📌 Supabase Key'
+        elif 'VERCEL_TOKEN' in pattern:
+            return '📌 Vercel Token'
+        elif 'NETLIFY_ACCESS_TOKEN' in pattern:
+            return '📌 Netlify Access Token'
+        elif 'CLOUDFLARE_API' in pattern:
+            return '📌 Cloudflare API Credential'
+        elif 'DATADOG_' in pattern:
+            return '📌 DataDog API Credential'
+
+        # === Generic Patterns ===
+        elif 'JWT' in pattern or 'eyJ' in pattern:
+            return '📌 JWT Token format'
+        elif 'Bearer' in pattern:
+            return '📌 Bearer Token format'
+        elif 'CLIENT_SECRET' in pattern or 'client_secret' in pattern:
+            return '📌 OAuth Client Secret'
+        elif 'SESSION_SECRET' in pattern or 'SECRET_KEY' in pattern:
+            return '📌 Session/Application Secret Key'
+        elif 'AI_API_KEY' in pattern:
+            return '📌 AI_API_KEY environment variable'
+        elif 'CHAT_API_KEY' in pattern:
+            return '📌 CHAT_API_KEY environment variable'
+        elif 'AZURE_OPENAI' in pattern:
+            return '📌 Azure OpenAI environment variable'
+
+        # === camelCase/PascalCase Patterns ===
         elif 'apiKey' in pattern and 'chat' not in pattern.lower() and 'openai' not in pattern.lower():
             return '📌 apiKey object property/variable assignment'
         elif 'chatApiKey' in pattern:
@@ -296,13 +521,15 @@ class ReportGenerator:
         elif 'anthropicApiKey' in pattern:
             return '📌 anthropicApiKey object property/variable assignment'
 
-        # Generic patterns
+        # === Generic Catch-all ===
         elif 'api_key' in pattern.lower():
             return '📌 Generic api_key variable assignment'
+        elif 'API_KEY' in pattern and 'api_key' in pattern:
+            return '📌 API_KEY/api_key environment variable'
 
-        # Default
+        # === Default ===
         else:
-            return f'📌 Regex pattern: {pattern[:50]}...' if len(pattern) > 50 else f'📌 Regex pattern: {pattern}'
+            return f'📌 Pattern: {pattern[:50]}...' if len(pattern) > 50 else f'📌 Pattern: {pattern}'
     
     def _mask_secret(self, secret: str) -> str:
         """
@@ -457,3 +684,101 @@ class ReportGenerator:
 {'━' * 80}
 """
         return summary
+
+    def generate_json_report(self,
+                            scan_results: List[Dict],
+                            scan_start_time: datetime,
+                            scan_type: str = "auto") -> str:
+        """
+        Generate JSON format scan report for automation/integration
+
+        Args:
+            scan_results: List of scan results
+            scan_start_time: Scan start time
+            scan_type: Scan type (user/org/auto)
+
+        Returns:
+            JSON report file path
+        """
+        report_time = datetime.now()
+        timestamp = report_time.strftime("%Y%m%d_%H%M%S")
+        filename = f"scan_report_{timestamp}.json"
+        filepath = os.path.join(self.output_dir, filename)
+
+        # Calculate statistics
+        high_count = sum(1 for r in scan_results if r.get('confidence') == 'high')
+        medium_count = sum(1 for r in scan_results if r.get('confidence') == 'medium')
+        repos_count = len(set(r.get('repo_url') for r in scan_results)) if scan_results else 0
+        duration = (report_time - scan_start_time).total_seconds()
+
+        # Build JSON structure
+        report_data = {
+            "metadata": {
+                "version": "2.1.0",
+                "scan_type": scan_type,
+                "scan_start": scan_start_time.isoformat(),
+                "scan_end": report_time.isoformat(),
+                "duration_seconds": duration,
+                "production_mode": PRODUCTION_MODE
+            },
+            "summary": {
+                "total_findings": len(scan_results),
+                "high_confidence": high_count,
+                "medium_confidence": medium_count,
+                "low_confidence": len(scan_results) - high_count - medium_count,
+                "affected_repositories": repos_count,
+                "affected_files": len(set(r.get('file_path') for r in scan_results)) if scan_results else 0
+            },
+            "findings": []
+        }
+
+        # Add findings with masked secrets
+        for finding in scan_results:
+            report_data["findings"].append({
+                "repository": {
+                    "name": finding.get('repo_name', 'unknown'),
+                    "url": finding.get('repo_url', '')
+                },
+                "file": {
+                    "path": finding.get('file_path', ''),
+                    "line": finding.get('line_number', 0)
+                },
+                "secret": {
+                    "type": self._identify_secret_type(finding.get('secret', '')),
+                    "masked_value": self._mask_secret(finding.get('secret', '')),
+                    "confidence": finding.get('confidence', 'unknown'),
+                    "pattern": finding.get('pattern', '')[:100]  # Truncate long patterns
+                },
+                "context": {
+                    "line_content": finding.get('line_content', '')[:200],  # Truncate long lines
+                    "scan_time": finding.get('scan_time', '')
+                }
+            })
+
+        # Group findings by repository
+        findings_by_repo = {}
+        for finding in scan_results:
+            repo = finding.get('repo_url', 'unknown')
+            if repo not in findings_by_repo:
+                findings_by_repo[repo] = []
+            findings_by_repo[repo].append(finding)
+
+        report_data["statistics"] = {
+            "findings_by_confidence": {
+                "high": high_count,
+                "medium": medium_count,
+                "low": len(scan_results) - high_count - medium_count
+            },
+            "findings_by_repository": {
+                repo: len(findings) for repo, findings in findings_by_repo.items()
+            }
+        }
+
+        # Write JSON file
+        with open(filepath, 'w', encoding='utf-8') as f:
+            json.dump(report_data, f, indent=2, ensure_ascii=False)
+
+        if PRODUCTION_MODE:
+            print(f"📊 JSON report saved to: {filepath}")
+
+        return filepath

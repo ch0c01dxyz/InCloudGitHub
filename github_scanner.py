@@ -1,12 +1,30 @@
 """
 GitHub repository scanning module
+Version: 2.1.0 (Production Ready with Retry Logic)
 """
 import time
 import re
 from datetime import datetime
 from typing import List, Dict, Optional
 from github import Github, GithubException
-from config import GITHUB_TOKEN, AI_SEARCH_KEYWORDS, MAX_REPOS_PER_SEARCH, SEARCH_DELAY_SECONDS
+
+# Import with fallback
+try:
+    from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
+    TENACITY_AVAILABLE = True
+except ImportError:
+    TENACITY_AVAILABLE = False
+    # Fallback: no retry decorator
+    def retry(*args, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    stop_after_attempt = wait_exponential = retry_if_exception_type = lambda *args, **kwargs: None
+
+from config import (
+    GITHUB_TOKEN, AI_SEARCH_KEYWORDS, MAX_REPOS_PER_SEARCH,
+    SEARCH_DELAY_SECONDS, ENABLE_RETRY, MAX_RETRIES, PRODUCTION_MODE
+)
 
 
 class GitHubScanner:
@@ -181,39 +199,66 @@ class GitHubScanner:
         
         return all_repos
     
-    def get_repo_files(self, repo_full_name: str, path: str = "") -> List[Dict]:
+    def get_repo_files(self, repo_full_name: str, path: str = "", max_depth: int = 10, _current_depth: int = 0) -> List[Dict]:
         """
-        Get list of files in repository
+        Get list of files in repository with retry logic
 
         Args:
             repo_full_name: Repository full name (owner/repo)
             path: File path
+            max_depth: Maximum recursion depth (default: 10)
+            _current_depth: Current recursion depth (internal use)
 
         Returns:
             List of file information
         """
+        # Check recursion depth to prevent stack overflow
+        if _current_depth >= max_depth:
+            if PRODUCTION_MODE:
+                print(f"  ⚠️  Max depth reached at {path}, skipping deeper directories")
+            return []
+
+        # Apply retry decorator if available and enabled
+        if ENABLE_RETRY and TENACITY_AVAILABLE:
+            @retry(
+                stop=stop_after_attempt(MAX_RETRIES),
+                wait=wait_exponential(multiplier=1, min=2, max=10),
+                retry=retry_if_exception_type(GithubException),
+                reraise=True
+            )
+            def _get_contents():
+                repo = self.github.get_repo(repo_full_name)
+                return repo.get_contents(path)
+
+            get_contents = _get_contents
+        else:
+            def get_contents():
+                repo = self.github.get_repo(repo_full_name)
+                return repo.get_contents(path)
+
         try:
-            repo = self.github.get_repo(repo_full_name)
-            contents = repo.get_contents(path)
-            
+            contents = get_contents()
+
             files = []
             for content in contents:
                 if content.type == "dir":
-                    # Recursively get subdirectory files
-                    files.extend(self.get_repo_files(repo_full_name, content.path))
+                    # Recursively get subdirectory files with depth tracking
+                    files.extend(self.get_repo_files(repo_full_name, content.path, max_depth, _current_depth + 1))
                 else:
                     files.append({
                         'path': content.path,
                         'name': content.name,
                         'download_url': content.download_url,
                         'sha': content.sha,
+                        'size': content.size,  # Add size for filtering
                     })
 
             return files
         except GithubException as e:
             # Skip 403 errors directly, no waiting
             if e.status == 403:
-                print(f"  ⏭️  Skipping: No access (403 Forbidden)")
+                if PRODUCTION_MODE:
+                    print(f"  ⏭️  Skipping: No access (403 Forbidden)")
             else:
                 print(f"⚠️  Failed to get file list: {e}")
             return []
@@ -242,5 +287,5 @@ class GitHubScanner:
         except GithubException as e:
             # Skip 403 errors directly, don't print error
             if e.status == 403:
-                pass  # Silent skip
+                return None  # Silent skip
             return None

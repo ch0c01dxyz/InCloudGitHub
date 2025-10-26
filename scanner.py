@@ -1,19 +1,32 @@
 """
 Main scanner module - Integrates all functionality
+Version: 2.1.0 (Production Ready)
 """
 import time
 from datetime import datetime
 from typing import List, Dict, Optional
+
+# Import with fallback for graceful degradation
+try:
+    from tqdm import tqdm
+    TQDM_AVAILABLE = True
+except ImportError:
+    TQDM_AVAILABLE = False
+    # Fallback: simple passthrough
+    def tqdm(iterable, *args, **kwargs):
+        return iterable
+
 from github_scanner import GitHubScanner
 from secret_detector import SecretDetector
 from report_generator import ReportGenerator
 from scan_history import ScanHistory
+from config import MAX_FILE_SIZE, MAX_FILE_SIZE_WARNING, PRODUCTION_MODE
 
 
 class CloudScanner:
     """Cloud Scanner - Main scanning logic"""
 
-    def __init__(self, github_token: str, skip_scanned: bool = True, timeout_minutes: int = 50):
+    def __init__(self, github_token: str, skip_scanned: bool = True, timeout_minutes: int = 50, output_dir: str = None):
         """
         Initialize scanner
 
@@ -21,10 +34,11 @@ class CloudScanner:
             github_token: GitHub Personal Access Token
             skip_scanned: Whether to skip already scanned repositories (default: True)
             timeout_minutes: Scan timeout in minutes, default 50 minutes
+            output_dir: Output directory for reports (optional)
         """
         self.github_scanner = GitHubScanner(github_token)
         self.secret_detector = SecretDetector()
-        self.report_generator = ReportGenerator()
+        self.report_generator = ReportGenerator(output_dir) if output_dir else ReportGenerator()
         self.scan_history = ScanHistory()
         self.skip_scanned = skip_scanned
         self.timeout_seconds = timeout_minutes * 60
@@ -56,15 +70,16 @@ class CloudScanner:
             return True
         return False
     
-    def scan_user(self, username: str) -> str:
+    def scan_user(self, username: str, return_data: bool = False):
         """
         Scan all public repositories of specified user
 
         Args:
             username: GitHub username
+            return_data: If True, return (report_path, scan_data) tuple
 
         Returns:
-            Report file path
+            Report file path, or (report_path, scan_data) if return_data=True
         """
         print(f"🚀 Starting scan for user: {username}")
         scan_start_time = datetime.now()
@@ -82,14 +97,16 @@ class CloudScanner:
 
         # Scan all repositories
         all_findings = []
-        for idx, repo in enumerate(repos_to_scan, 1):
-            # Check timeout
-            if self._check_timeout(idx - 1, len(repos_to_scan)):
-                break
+        with tqdm(total=len(repos_to_scan), desc="Scanning repositories", unit="repo", ncols=100) as pbar:
+            for idx, repo in enumerate(repos_to_scan, 1):
+                # Check timeout
+                if self._check_timeout(idx - 1, len(repos_to_scan)):
+                    break
 
-            print(f"🔍 [{idx}/{len(repos_to_scan)}] Scanning repository: {repo['full_name']}")
-            findings = self._scan_repository(repo, scan_type=f"user:{username}")
-            all_findings.extend(findings)
+                pbar.set_description(f"Scanning {repo['full_name'][:40]}")
+                findings = self._scan_repository(repo, scan_type=f"user:{username}")
+                all_findings.extend(findings)
+                pbar.update(1)
 
         # Generate report
         print(f"\n📝 Generating report...")
@@ -103,17 +120,24 @@ class CloudScanner:
         summary = self.report_generator.generate_summary(report_path, len(all_findings))
         print(summary)
 
+        if return_data:
+            return report_path, {
+                'findings': all_findings,
+                'start_time': scan_start_time,
+                'scan_type': f"user:{username}"
+            }
         return report_path
-    
-    def scan_organization(self, org_name: str) -> str:
+
+    def scan_organization(self, org_name: str, return_data: bool = False):
         """
         Scan all public repositories of specified organization
 
         Args:
             org_name: GitHub organization name
+            return_data: If True, return (report_path, scan_data) tuple
 
         Returns:
-            Report file path
+            Report file path, or (report_path, scan_data) if return_data=True
         """
         print(f"🚀 Starting scan for organization: {org_name}")
         scan_start_time = datetime.now()
@@ -131,14 +155,16 @@ class CloudScanner:
 
         # Scan all repositories
         all_findings = []
-        for idx, repo in enumerate(repos_to_scan, 1):
-            # Check timeout
-            if self._check_timeout(idx - 1, len(repos_to_scan)):
-                break
+        with tqdm(total=len(repos_to_scan), desc="Scanning repositories", unit="repo", ncols=100) as pbar:
+            for idx, repo in enumerate(repos_to_scan, 1):
+                # Check timeout
+                if self._check_timeout(idx - 1, len(repos_to_scan)):
+                    break
 
-            print(f"🔍 [{idx}/{len(repos_to_scan)}] Scanning repository: {repo['full_name']}")
-            findings = self._scan_repository(repo, scan_type=f"org:{org_name}")
-            all_findings.extend(findings)
+                pbar.set_description(f"Scanning {repo['full_name'][:40]}")
+                findings = self._scan_repository(repo, scan_type=f"org:{org_name}")
+                all_findings.extend(findings)
+                pbar.update(1)
 
         # Generate report
         print(f"\n📝 Generating report...")
@@ -152,17 +178,24 @@ class CloudScanner:
         summary = self.report_generator.generate_summary(report_path, len(all_findings))
         print(summary)
 
+        if return_data:
+            return report_path, {
+                'findings': all_findings,
+                'start_time': scan_start_time,
+                'scan_type': f"org:{org_name}"
+            }
         return report_path
-    
-    def scan_ai_projects(self, max_repos: int = 50) -> str:
+
+    def scan_ai_projects(self, max_repos: int = 50, return_data: bool = False):
         """
         Auto search and scan AI-related projects
 
         Args:
             max_repos: Maximum number of repositories to scan
+            return_data: If True, return (report_path, scan_data) tuple
 
         Returns:
-            Report file path
+            Report file path, or (report_path, scan_data) if return_data=True
         """
         print(f"🚀 Starting auto search for AI-related projects")
         print(f"🎯 Target: Find and scan {max_repos} unscanned repositories")
@@ -184,14 +217,16 @@ class CloudScanner:
 
         # Scan all repositories
         all_findings = []
-        for idx, repo in enumerate(repos_to_scan, 1):
-            # Check timeout
-            if self._check_timeout(idx - 1, len(repos_to_scan)):
-                break
+        with tqdm(total=len(repos_to_scan), desc="Scanning AI projects", unit="repo", ncols=100) as pbar:
+            for idx, repo in enumerate(repos_to_scan, 1):
+                # Check timeout
+                if self._check_timeout(idx - 1, len(repos_to_scan)):
+                    break
 
-            print(f"🔍 [{idx}/{len(repos_to_scan)}] Scanning repository: {repo['full_name']}")
-            findings = self._scan_repository(repo, scan_type="auto:ai-projects")
-            all_findings.extend(findings)
+                pbar.set_description(f"Scanning {repo['full_name'][:40]}")
+                findings = self._scan_repository(repo, scan_type="auto:ai-projects")
+                all_findings.extend(findings)
+                pbar.update(1)
 
         # Generate report
         print(f"\n📝 Generating report...")
@@ -205,17 +240,24 @@ class CloudScanner:
         summary = self.report_generator.generate_summary(report_path, len(all_findings))
         print(summary)
 
+        if return_data:
+            return report_path, {
+                'findings': all_findings,
+                'start_time': scan_start_time,
+                'scan_type': "auto:ai-projects"
+            }
         return report_path
-    
-    def scan_single_repo(self, repo_full_name: str) -> str:
+
+    def scan_single_repo(self, repo_full_name: str, return_data: bool = False):
         """
         Scan a single repository
 
         Args:
             repo_full_name: Repository full name (owner/repo)
+            return_data: If True, return (report_path, scan_data) tuple
 
         Returns:
-            Report file path
+            Report file path, or (report_path, scan_data) if return_data=True
         """
         print(f"🚀 Starting scan for repository: {repo_full_name}")
         scan_start_time = datetime.now()
@@ -242,8 +284,14 @@ class CloudScanner:
         summary = self.report_generator.generate_summary(report_path, len(findings))
         print(summary)
 
+        if return_data:
+            return report_path, {
+                'findings': findings,
+                'start_time': scan_start_time,
+                'scan_type': f"single:{repo_full_name}"
+            }
         return report_path
-    
+
     def _filter_scanned_repos(self, repos: List[Dict]) -> tuple:
         """
         Filter already scanned repositories
@@ -283,10 +331,15 @@ class CloudScanner:
         findings = []
         scan_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         repo_name = repo.get('full_name', 'unknown')
-        
+
+        # Validate required fields
+        if not repo_name or repo_name == 'unknown':
+            print(f"  ❌ Invalid repository data: missing 'full_name'")
+            return findings
+
         try:
             # Get repository file list
-            files = self.github_scanner.get_repo_files(repo['full_name'])
+            files = self.github_scanner.get_repo_files(repo_name)
 
             # If getting file list fails (e.g., 403 error), return directly
             if not files:
@@ -296,21 +349,34 @@ class CloudScanner:
 
             # Scan each file
             for file_info in files:
+                file_path = file_info.get('path', '')
+                if not file_path:
+                    continue
+
+                # Check file size (production safeguard)
+                file_size = file_info.get('size', 0)
+                if file_size > MAX_FILE_SIZE:
+                    if PRODUCTION_MODE:
+                        print(f"  ⏭️  Skipping large file: {file_path} ({file_size / 1024 / 1024:.1f}MB)")
+                    continue
+                elif file_size > MAX_FILE_SIZE_WARNING and PRODUCTION_MODE:
+                    print(f"  ⚠️  Scanning large file: {file_path} ({file_size / 1024 / 1024:.1f}MB)")
+
                 # Check if this file should be scanned
-                if not self.secret_detector.should_scan_file(file_info['path']):
+                if not self.secret_detector.should_scan_file(file_path):
                     continue
 
                 # Get file content
                 content = self.github_scanner.get_file_content(
-                    repo['full_name'],
-                    file_info['path']
+                    repo_name,
+                    file_path
                 )
 
                 if content:
                     # Detect sensitive information
                     secrets = self.secret_detector.detect_secrets_in_text(
                         content,
-                        file_info['path']
+                        file_path
                     )
 
                     # Add repository information
