@@ -1,0 +1,228 @@
+name: KScanner - Manual Scan
+
+on:
+  workflow_dispatch:
+    inputs:
+      scan_type:
+        description: 'Scan Type'
+        required: true
+        type: choice
+        options:
+          - 'auto - Auto'
+          - 'user - by user'
+          - 'org - by org'
+          - 'repo - single repo'
+
+      target:
+        description: 'Target'
+        required: false
+        type: string
+        default: ''
+
+      max_repos:
+        description: 'Max. repo'
+        required: false
+        type: number
+        default: 500
+
+      create_issue:
+        description: 'Create issue'
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  manual-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup py
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ⚙️ Environment cfg
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.GH_SCAN_TOKEN }}" > .env
+          echo "OUTPUT_DIR=./scan_reports" >> .env
+          mkdir -p scan_reports
+
+      - name: 🔍 Exec. Auto
+        if: startsWith(github.event.inputs.scan_type, 'auto')
+        run: |
+          echo "Executing auto scan, scanning up to ${{ github.event.inputs.max_repos }} repositories"
+          python scan_github.py --auto --max-repos ${{ github.event.inputs.max_repos }}
+
+      - name: 🔍 Exec. User
+        if: startsWith(github.event.inputs.scan_type, 'user')
+        run: |
+          echo "Scanning user: ${{ github.event.inputs.target }}"
+          python scan_github.py --user "${{ github.event.inputs.target }}"
+
+      - name: 🔍 Exec. Org
+        if: startsWith(github.event.inputs.scan_type, 'org')
+        run: |
+          echo "Scanning organization: ${{ github.event.inputs.target }}"
+          python scan_github.py --org "${{ github.event.inputs.target }}"
+
+      - name: 🔍 Exec. Repo
+        if: startsWith(github.event.inputs.scan_type, 'repo')
+        run: |
+          echo "Scanning repository: ${{ github.event.inputs.target }}"
+          python scan_github.py --repo "${{ github.event.inputs.target }}"
+      
+      - name: 📊 Generated summary
+        if: always()
+        run: |
+          echo "# 🔍 Doned" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Type**: ${{ github.event.inputs.scan_type }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Target**: ${{ github.event.inputs.target }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Exec. time**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f scan_reports/*.txt ]; then
+            echo "## 📄 Results" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -n 80 scan_reports/*.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 📤 Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-scan-report-${{ github.run_number }}
+          path: scan_reports/
+          retention-days: 90
+          if-no-files-found: ignore
+      
+      - name: 💾 Commit history and reports
+        if: always()
+        run: |
+          git config user.name "Egar Rizki"
+          git config user.email "ch0c01d@mm.st"
+
+          git add scan_history/
+
+          if [ -d "scan_reports" ] && [ "$(ls -A scan_reports 2>/dev/null)" ]; then
+            git add scan_reports/
+            echo "✅ Found reports, commiting ..."
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No data"
+          else
+            HISTORY_CHANGED=$(git diff --cached --name-only | grep "scan_history/" | wc -l | tr -d ' ')
+            REPORTS_CHANGED=$(git diff --cached --name-only | grep "scan_reports/" | wc -l | tr -d ' ')
+
+            COMMIT_MSG="📝 Update result [skip ci]"
+            if [ "$HISTORY_CHANGED" -gt 0 ] && [ "$REPORTS_CHANGED" -gt 0 ]; then
+              COMMIT_MSG="📝 Update history and reports [skip ci]"
+            elif [ "$REPORTS_CHANGED" -gt 0 ]; then
+              COMMIT_MSG="📄 Add reports [skip ci]"
+            fi
+
+            git commit -m "$COMMIT_MSG"
+
+            git pull --rebase origin main || {
+              echo "⚠️ Rebase conflict, trying to use local version"
+              git rebase --abort
+              git pull --rebase --strategy-option=ours origin main
+            }
+
+            git push
+            echo "✅ Committed: $HISTORY_CHANGED history files, $REPORTS_CHANGED report files"
+          fi
+      
+      - name: 🔔 Analyze results
+        id: analyze
+        if: always()
+        run: |
+          if [ -f scan_reports/*.txt ]; then
+            FINDINGS=$(grep "Total issues found:" scan_reports/*.txt | grep -oE '[0-9]+' || echo "0")
+            echo "Found $FINDINGS potential issues"
+            echo "findings_count=$FINDINGS" >> $GITHUB_OUTPUT
+
+            if [ "$FINDINGS" -gt 0 ]; then
+              echo "has_findings=true" >> $GITHUB_OUTPUT
+            else
+              echo "has_findings=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "findings_count=0" >> $GITHUB_OUTPUT
+            echo "has_findings=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📢 Create alert issue
+        if: |
+          always() && 
+          github.event.inputs.create_issue == 'true' && 
+          steps.analyze.outputs.has_findings == 'true'
+        uses: actions/github-script@v7
+        env:
+          FINDINGS_COUNT: ${{ steps.analyze.outputs.findings_count }}
+          SCAN_TYPE: ${{ github.event.inputs.scan_type }}
+          SCAN_TARGET: ${{ github.event.inputs.target }}
+        with:
+          script: |
+            const fs = require('fs');
+            const reportDir = 'scan_reports';
+            const findingsCount = process.env.FINDINGS_COUNT;
+            const scanType = process.env.SCAN_TYPE;
+            const scanTarget = process.env.SCAN_TARGET;
+
+            if (fs.existsSync(reportDir)) {
+              const files = fs.readdirSync(reportDir);
+              if (files.length > 0) {
+                const reportPath = `${reportDir}/${files[0]}`;
+                const content = fs.readFileSync(reportPath, 'utf8');
+                const preview = content.split('\n').slice(0, 120).join('\n');
+
+                const issueTitle = `🚨 [Manual] Found ${findingsCount} potential key`;
+                const issueBody = [
+                  '# 🔍 Manual Report',
+                  '',
+                  '## Info',
+                  '',
+                  `- Type: ${scanType}`,
+                  `- Target: ${scanTarget}`,
+                  `- Exec. time: ${new Date().toISOString()}`,
+                  `- Issues: ${findingsCount}`,
+                  `- Workflow Run: [#${context.runNumber}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                  '',
+                  '## 📄 Report Preview',
+                  '',
+                  '```',
+                  preview,
+                  '```',
+                  '',
+                  '## 🔗 Complete Report',
+                  '',
+                  `Download report from [Artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
+                  '',
+                  '---',
+                  '*This issue was created automatically by GitHub Actions*'
+                ].join('\n');
+                
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body: issueBody,
+                  labels: ['security', 'manual-scan', 'needs-review']
+                });
+              }
+            }

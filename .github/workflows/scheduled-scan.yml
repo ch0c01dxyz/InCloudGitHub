@@ -1,0 +1,276 @@
+name: KScanner - Scheduled Scan
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'
+
+  workflow_dispatch:
+
+concurrency:
+  group: scheduled-scan
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  scheduled-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    steps:
+      - name: 📅 Display execution time
+        run: |
+          echo "🕐 Current time (UTC): $(date -u)"
+          echo "🕐 Current time (Jakarta): $(TZ='Asia/Jakarta' date)"
+
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Py
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ⚙️ Environment cfg
+        env:
+          GITHUB_SCAN_TOKEN: ${{ secrets.GH_SCAN_TOKEN }}
+        run: |
+          echo "GITHUB_TOKEN=${GITHUB_SCAN_TOKEN}" > .env
+          echo "OUTPUT_DIR=./scan_reports" >> .env
+          mkdir -p scan_reports
+      
+      - name: 🔍 Exec scheduled
+        id: scan
+        run: |
+          echo "Starting automatic scan task..."
+          python scan_github.py --auto --max-repos 50 2>&1 | tee scan.log
+
+          if [ $? -eq 0 ]; then
+            echo "scan_status=success" >> $GITHUB_OUTPUT
+          else
+            echo "scan_status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📊 Analyze results
+        id: analyze
+        if: always()
+        run: |
+          if [ -d "scan_reports" ] && [ "$(ls -A scan_reports)" ]; then
+            REPORT_FILE=$(ls -t scan_reports/*.txt | head -1)
+
+            TOTAL=$(grep "Total issues found:" "$REPORT_FILE" | grep -oE '[0-9]+' || echo "0")
+            HIGH=$(grep "High Risk:" "$REPORT_FILE" | grep -oE '[0-9]+' || echo "0")
+            MEDIUM=$(grep "Medium Risk:" "$REPORT_FILE" | grep -oE '[0-9]+' || echo "0")
+
+            echo "total_findings=$TOTAL" >> $GITHUB_OUTPUT
+            echo "high_confidence=$HIGH" >> $GITHUB_OUTPUT
+            echo "medium_confidence=$MEDIUM" >> $GITHUB_OUTPUT
+
+            echo "📊 Result stats:"
+            echo "  - Total issues: $TOTAL"
+            echo "  - High Risk: $HIGH"
+            echo "  - Medium Risk: $MEDIUM"
+
+            if [ "$TOTAL" -gt 0 ]; then
+              echo "needs_alert=true" >> $GITHUB_OUTPUT
+            else
+              echo "needs_alert=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "⚠️ No reports found"
+            echo "total_findings=0" >> $GITHUB_OUTPUT
+            echo "needs_alert=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📝 Generate summary
+        if: always()
+        run: |
+          echo "# 🔍 Scheduled Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Exec. time**: $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "**Mode**: Auto search AI-related projects" >> $GITHUB_STEP_SUMMARY
+          echo "**Status**: ${{ steps.scan.outputs.scan_status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if ls scan_reports/*.txt 1> /dev/null 2>&1; then
+            echo "## 📊 Scan Statistics" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- 🔴 High Risk: ${{ steps.analyze.outputs.high_confidence }}" >> $GITHUB_STEP_SUMMARY
+            echo "- 🟡 Medium Risk: ${{ steps.analyze.outputs.medium_confidence }}" >> $GITHUB_STEP_SUMMARY
+            echo "- 📦 Total: ${{ steps.analyze.outputs.total_findings }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            echo "## 📄 Report Preview" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -n 100 scan_reports/*.txt >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 📤 Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scheduled-scan-${{ github.run_number }}
+          path: |
+            scan_reports/
+            scan.log
+          retention-days: 90
+          if-no-files-found: ignore
+      
+      - name: 💾 Commit history and reports
+        if: always()
+        run: |
+          git config user.name "Egar Rizki"
+          git config user.email "ch0c01d@mm.st"
+
+          git add scan_history/
+
+          if [ -d "scan_reports" ] && [ "$(ls -A scan_reports 2>/dev/null)" ]; then
+            git add scan_reports/
+            echo "✅ Found reports, will commit together"
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No new history or reports"
+          else
+            HISTORY_CHANGED=$(git diff --cached --name-only | grep "scan_history/" | wc -l | tr -d ' ')
+            REPORTS_CHANGED=$(git diff --cached --name-only | grep "scan_reports/" | wc -l | tr -d ' ')
+
+            COMMIT_MSG="📝 Update data [skip ci]"
+            if [ "$HISTORY_CHANGED" -gt 0 ] && [ "$REPORTS_CHANGED" -gt 0 ]; then
+              COMMIT_MSG="📝 Update history and reports [skip ci]"
+            elif [ "$REPORTS_CHANGED" -gt 0 ]; then
+              COMMIT_MSG="📄 Add reports [skip ci]"
+            fi
+
+            git commit -m "$COMMIT_MSG"
+
+            git pull --rebase origin main || {
+              echo "⚠️ Rebase conflict, trying to use local version"
+              git rebase --abort
+              git pull --rebase --strategy-option=ours origin main
+            }
+
+            git push
+            echo "✅ Committed: $HISTORY_CHANGED history files, $REPORTS_CHANGED report files"
+          fi
+      
+      - name: 🚨 Create alert issue
+        if: steps.analyze.outputs.needs_alert == 'true'
+        uses: actions/github-script@v7
+        env:
+          TOTAL_FINDINGS: ${{ steps.analyze.outputs.total_findings }}
+          HIGH_CONFIDENCE: ${{ steps.analyze.outputs.high_confidence }}
+          MEDIUM_CONFIDENCE: ${{ steps.analyze.outputs.medium_confidence }}
+        with:
+          script: |
+            const fs = require('fs');
+            const reportFiles = fs.readdirSync('scan_reports');
+
+            if (reportFiles.length > 0) {
+              const reportPath = `scan_reports/${reportFiles[0]}`;
+              const content = fs.readFileSync(reportPath, 'utf8');
+              const preview = content.split('\n').slice(0, 150).join('\n');
+
+              const total = process.env.TOTAL_FINDINGS;
+              const high = process.env.HIGH_CONFIDENCE;
+              const medium = process.env.MEDIUM_CONFIDENCE;
+
+              const today = new Date().toISOString().split('T')[0];
+              const existingIssues = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: 'auto-scan,security',
+                state: 'open'
+              });
+
+              const todayIssue = existingIssues.data.find(issue =>
+                issue.title.includes(today)
+              );
+
+              if (todayIssue) {
+                const updateBody = [
+                  '## 🔄 Update: New Findings',
+                  '',
+                  `Scan time: ${new Date().toISOString()}`,
+                  `Run: [#${context.runNumber}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                  '',
+                  '### 📊 Current Stats',
+                  `- 🔴 High Risk: ${high}`,
+                  `- 🟡 Medium Risk: ${medium}`,
+                  `- 📦 Total: ${total}`,
+                  '',
+                  'Please check Artifacts for complete report.'
+                ].join('\n');
+
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: todayIssue.number,
+                  body: updateBody
+                });
+              } else {
+                const highWarning = high > 0 ? '⚠️ Immediate action required' : '';
+                const mediumWarning = medium > 0 ? '⚠️ Review recommended' : '';
+
+                const issueTitle = `🚨 [${today}] Found ${total} potential key`;
+                const issueBody = [
+                  '# 🔍 Alert',
+                  '',
+                  '## 📋 Information',
+                  '',
+                  `- Date: ${today}`,
+                  `- Exec. Time: ${new Date().toISOString()}`,
+                  `- Workflow: [Run #${context.runNumber}](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                  '',
+                  '## 📊 Issues Found Stats',
+                  '',
+                  `- 🔴 Risk: ${high} ${highWarning}`,
+                  `- 🟡 Medium Risk: ${medium} ${mediumWarning}`,
+                  `- 📦 Total: ${total}`,
+                  '',
+                  '## 📄 Report Preview',
+                  '',
+                  '```',
+                  preview,
+                  '```',
+                  '',
+                  '## 🔗 Complete Report',
+                  '',
+                  `Download report from [Artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}).`,
+                  '',
+                  '## 📅 Next',
+                  '',
+                  'The next automatic proccess will run at the same time tomorrow.',
+                  '',
+                  '---',
+                  `*🤖 This issue was created automatically by GitHub Actions - [View workflow](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/main/.github/workflows/scheduled-scan.yml)*`
+                ].join('\n');
+
+                await github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: issueTitle,
+                  body: issueBody,
+                  labels: ['security', 'auto-scan', 'needs-review'],
+                  assignees: []
+                });
+              }
+            }
+      
+      - name: ✅ Doned
+        if: always()
+        run: |
+          if [ "${{ steps.analyze.outputs.total_findings }}" -gt 0 ]; then
+            echo "⚠️ Doned, found ${{ steps.analyze.outputs.total_findings }} potential issues"
+            echo "Please check the generated Issue and detailed report in Artifacts"
+          else
+            echo "✅ Doned, no obvious issues found"
+          fi

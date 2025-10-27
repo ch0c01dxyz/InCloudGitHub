@@ -1,0 +1,169 @@
+name: KScanner - Auto Scan
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # Execute once daily
+
+  workflow_dispatch:
+    inputs:
+      scan_mode:
+        description: 'Mode'
+        required: true
+        default: 'auto'
+        type: choice
+        options:
+          - auto
+          - user
+          - org
+      target:
+        description: 'Target'
+        required: false
+        type: string
+      max_repos:
+        description: 'Max. Repo'
+        required: false
+        default: '500'
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup py
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: 📦 Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: ⚙️ Environment cfg
+        run: |
+          echo "GITHUB_TOKEN=${{ secrets.GH_SCAN_TOKEN }}" > .env
+          echo "OUTPUT_DIR=./scan_reports" >> .env
+
+      - name: 🔍 Exec. schedule
+        if: github.event_name == 'schedule'
+        run: |
+          python scan_github.py --auto --max-repos 50
+
+      - name: 🔍 Exec. auto
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.scan_mode == 'auto'
+        run: |
+          python scan_github.py --auto --max-repos ${{ github.event.inputs.max_repos }}
+
+      - name: 🔍 Exec. user
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.scan_mode == 'user'
+        run: |
+          python scan_github.py --user ${{ github.event.inputs.target }}
+
+      - name: 🔍 Exec. org
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.scan_mode == 'org'
+        run: |
+          python scan_github.py --org ${{ github.event.inputs.target }}
+
+      - name: 📤 Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-report-${{ github.run_number }}
+          path: scan_reports/
+          retention-days: 90
+          if-no-files-found: ignore
+      
+      - name: 💾 Commit history and reports
+        if: always()
+        run: |
+          git config user.name "Egar Rizki"
+          git config user.email "ch0c01d@mm.st"
+
+          git add scan_history/
+
+          if [ -d "scan_reports" ] && [ "$(ls -A scan_reports 2>/dev/null)" ]; then
+            git add scan_reports/
+            echo "✅ Found reports, commiting ..."
+          fi
+
+          if git diff --cached --quiet; then
+            echo "No data"
+          else
+            HISTORY_CHANGED=$(git diff --cached --name-only | grep "scan_history/" | wc -l | tr -d ' ')
+            REPORTS_CHANGED=$(git diff --cached --name-only | grep "scan_reports/" | wc -l | tr -d ' ')
+
+            COMMIT_MSG="📝 Update data [skip ci]"
+            if [ "$HISTORY_CHANGED" -gt 0 ] && [ "$REPORTS_CHANGED" -gt 0 ]; then
+              COMMIT_MSG="📝 Update history and reports [skip ci]"
+            elif [ "$REPORTS_CHANGED" -gt 0 ]; then
+              COMMIT_MSG="📄 Add reports [skip ci]"
+            fi
+
+            git commit -m "$COMMIT_MSG"
+
+            git pull --rebase origin main || {
+              echo "⚠️ Rebase conflict, trying to use local version"
+              git rebase --abort
+              git pull --rebase --strategy-option=ours origin main
+            }
+
+            git push
+            echo "✅ Committed: $HISTORY_CHANGED history files, $REPORTS_CHANGED report files"
+          fi
+      
+      - name: 📊 Display summary
+        if: always()
+        run: |
+          if [ -d "scan_reports" ] && [ "$(ls -A scan_reports)" ]; then
+            echo "## 📋 Report generated successfully" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📁 Report files:" >> $GITHUB_STEP_SUMMARY
+            ls -lh scan_reports/ >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "### 📄 Report preview (first 50 lines):" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            head -n 50 scan_reports/*.txt | tail -n 50 >> $GITHUB_STEP_SUMMARY || echo "Unable to read report content" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No report files generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 🔔 Check findings
+        id: check_findings
+        run: |
+          if grep -q "Total issues found: [1-9]" scan_reports/*.txt 2>/dev/null; then
+            echo "Issues found"
+            echo "has_findings=true" >> $GITHUB_OUTPUT
+          else
+            echo "No issues found"
+            echo "has_findings=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 📢 Create alert issue
+        if: steps.check_findings.outputs.has_findings == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const reportFiles = fs.readdirSync('scan_reports');
+            if (reportFiles.length > 0) {
+              const reportContent = fs.readFileSync(`scan_reports/${reportFiles[0]}`, 'utf8');
+              const lines = reportContent.split('\n').slice(0, 100).join('\n');
+
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `⚠️ Security found potential key - ${new Date().toISOString().split('T')[0]}`,
+                body: `# 🔍 Auto Report\n\nFound potential key issues.\n\n**Time**: ${new Date().toISOString()}\n**Run ID**: #${context.runNumber}\n\n## 📄 Report Summary\n\n\`\`\`\n${lines}\n\`\`\`\n\nFor complete report, please check [Artifacts](https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId})`,
+                labels: ['security', 'auto-scan']
+              });
+            }
+
