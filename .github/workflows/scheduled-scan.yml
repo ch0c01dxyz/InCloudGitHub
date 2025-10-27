@@ -65,9 +65,9 @@ jobs:
           if [ -d "scan_reports" ] && [ "$(ls -A scan_reports)" ]; then
             REPORT_FILE=$(ls -t scan_reports/*.txt | head -1)
 
-            TOTAL=$(grep "Total issues found:" "$REPORT_FILE" | grep -oE '[0-9]+' || echo "0")
-            HIGH=$(grep "High Risk:" "$REPORT_FILE" | grep -oE '[0-9]+' || echo "0")
-            MEDIUM=$(grep "Medium Risk:" "$REPORT_FILE" | grep -oE '[0-9]+' || echo "0")
+            TOTAL=$(grep "Issues Found:" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1 || echo "0")
+            HIGH=$(grep "High Risk:" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1 || echo "0")
+            MEDIUM=$(grep "Medium Risk:" "$REPORT_FILE" | grep -oE '[0-9]+' | head -1 || echo "0")
 
             echo "total_findings=$TOTAL" >> $GITHUB_OUTPUT
             echo "high_confidence=$HIGH" >> $GITHUB_OUTPUT

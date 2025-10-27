@@ -152,7 +152,7 @@ jobs:
         if: always()
         run: |
           if [ -f scan_reports/*.txt ]; then
-            FINDINGS=$(grep "Total issues found:" scan_reports/*.txt | grep -oE '[0-9]+' || echo "0")
+            FINDINGS=$(grep "Issues Found:" scan_reports/*.txt | grep -oE '[0-9]+' | head -1 || echo "0")
             echo "Found $FINDINGS potential issues"
             echo "findings_count=$FINDINGS" >> $GITHUB_OUTPUT
 

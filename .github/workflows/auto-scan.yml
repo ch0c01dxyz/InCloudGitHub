@@ -139,7 +139,7 @@ jobs:
       - name: 🔔 Check findings
         id: check_findings
         run: |
-          if grep -q "Total issues found: [1-9]" scan_reports/*.txt 2>/dev/null; then
+          if grep -q "Issues Found:.*[1-9]" scan_reports/*.txt 2>/dev/null; then
             echo "Issues found"
             echo "has_findings=true" >> $GITHUB_OUTPUT
           else
