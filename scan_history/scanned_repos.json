@@ -1875,8 +1875,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "kamilm1307/llama_index": {
+      "first_scan": "2025-10-27 12:59:34",
+      "last_scan": "2025-10-27 12:59:34",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 268,
-  "last_updated": "2025-10-27 03:38:16"
+  "total_scanned": 269,
+  "last_updated": "2025-10-27 12:59:34"
 }
