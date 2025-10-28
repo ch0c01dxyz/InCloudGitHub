@@ -23,7 +23,7 @@ on:
         description: 'Max. repo'
         required: false
         type: number
-        default: 500
+        default: 100
 
       create_issue:
         description: 'Create issue'
@@ -96,7 +96,7 @@ jobs:
           if [ -f scan_reports/*.txt ]; then
             echo "## 📄 Results" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            head -n 80 scan_reports/*.txt >> $GITHUB_STEP_SUMMARY
+            head -n 100 scan_reports/*.txt >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           fi
 

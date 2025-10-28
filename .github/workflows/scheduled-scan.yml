@@ -50,7 +50,7 @@ jobs:
         id: scan
         run: |
           echo "Starting automatic scan task..."
-          python scan_github.py --auto --max-repos 50 2>&1 | tee scan.log
+          python scan_github.py --auto --max-repos 100 2>&1 | tee scan.log
 
           if [ $? -eq 0 ]; then
             echo "scan_status=success" >> $GITHUB_OUTPUT

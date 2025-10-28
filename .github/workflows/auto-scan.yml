@@ -2,7 +2,7 @@ name: KScanner - Auto Scan
 
 on:
   schedule:
-    - cron: '0 */12 * * *'  # Execute once daily
+    - cron: '0 */23 * * *'
 
   workflow_dispatch:
     inputs:
@@ -22,7 +22,7 @@ on:
       max_repos:
         description: 'Max. Repo'
         required: false
-        default: '500'
+        default: '100'
         type: string
 
 permissions:
@@ -55,7 +55,7 @@ jobs:
       - name: 🔍 Exec. schedule
         if: github.event_name == 'schedule'
         run: |
-          python scan_github.py --auto --max-repos 50
+          python scan_github.py --auto --max-repos 100
 
       - name: 🔍 Exec. auto
         if: github.event_name == 'workflow_dispatch' && github.event.inputs.scan_mode == 'auto'
@@ -130,7 +130,7 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "### 📄 Report preview (first 50 lines):" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
-            head -n 50 scan_reports/*.txt | tail -n 50 >> $GITHUB_STEP_SUMMARY || echo "Unable to read report content" >> $GITHUB_STEP_SUMMARY
+            head -n 100 scan_reports/*.txt | tail -n 100 >> $GITHUB_STEP_SUMMARY || echo "Unable to read report content" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
           else
             echo "⚠️ No report files generated" >> $GITHUB_STEP_SUMMARY

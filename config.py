@@ -200,8 +200,8 @@ EXCLUDED_DIRS = [
 	'env',
 ]
 
-MAX_REPOS_PER_SEARCH = 500
-SEARCH_DELAY_SECONDS = 30
+MAX_REPOS_PER_SEARCH = 100
+SEARCH_DELAY_SECONDS = 60
 
 MAX_FILE_SIZE = 10 * 1024 * 1024
 MAX_FILE_SIZE_WARNING = 5 * 1024 * 1024
@@ -213,7 +213,7 @@ PARALLEL_WORKERS = 1
 PRODUCTION_MODE = os.getenv('PRODUCTION_MODE', 'false').lower() == 'true'
 STRICT_VALIDATION = os.getenv('STRICT_VALIDATION', 'true').lower() == 'true'
 ENABLE_RETRY = os.getenv('ENABLE_RETRY', 'true').lower() == 'true'
-MAX_RETRIES = int(os.getenv('MAX_RETRIES', 3))
+MAX_RETRIES = int(os.getenv('MAX_RETRIES', 5))
 
 PATTERN_SEVERITY = {
 	'AKIA': 'critical',
