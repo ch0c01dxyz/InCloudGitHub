@@ -545,8 +545,561 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects:no-access",
       "scan_count": 1
+    },
+    "ToolsLowcodeFlow/azure-openai-chat": {
+      "first_scan": "2025-10-28 20:14:51",
+      "last_scan": "2025-10-28 20:14:51",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "mohammedhalim1/brandgen_ai": {
+      "first_scan": "2025-10-28 20:14:55",
+      "last_scan": "2025-10-28 20:14:55",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "ayusuf9/Gen-AI-Project": {
+      "first_scan": "2025-10-28 20:15:01",
+      "last_scan": "2025-10-28 20:15:01",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "chanleeip/python_anywhere": {
+      "first_scan": "2025-10-28 20:19:56",
+      "last_scan": "2025-10-28 20:19:56",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "sooryakumar9/gen_ai_progams": {
+      "first_scan": "2025-10-28 20:20:08",
+      "last_scan": "2025-10-28 20:20:08",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "hwbjun/vectordb2": {
+      "first_scan": "2025-10-28 20:20:12",
+      "last_scan": "2025-10-28 20:20:12",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "AmaanAnis/Building-Systems-with-the-ChatGPT-API-DL.AI": {
+      "first_scan": "2025-10-28 20:20:22",
+      "last_scan": "2025-10-28 20:20:22",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "electricramblers/derivatives": {
+      "first_scan": "2025-10-28 20:20:25",
+      "last_scan": "2025-10-28 20:20:25",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:failed",
+      "scan_count": 1
+    },
+    "ascovale/greedys_software_developer": {
+      "first_scan": "2025-10-28 20:23:10",
+      "last_scan": "2025-10-28 20:23:10",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:failed",
+      "scan_count": 1
+    },
+    "abdullahmamunn/python-voice-command": {
+      "first_scan": "2025-10-28 20:23:28",
+      "last_scan": "2025-10-28 20:23:28",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:failed",
+      "scan_count": 1
+    },
+    "imyourCxxmp/pa4_new": {
+      "first_scan": "2025-10-28 20:23:32",
+      "last_scan": "2025-10-28 20:23:32",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "KellisLab/auto-meeting-minutes": {
+      "first_scan": "2025-10-28 20:23:55",
+      "last_scan": "2025-10-28 20:23:55",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "rwill33/ai-document-analyzer": {
+      "first_scan": "2025-10-28 20:27:02",
+      "last_scan": "2025-10-28 20:27:02",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "pangchewe/Co-Intelligence-Investor-Typhoon-Fassst": {
+      "first_scan": "2025-10-28 20:27:06",
+      "last_scan": "2025-10-28 20:27:06",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "nitebyte/TripTeller": {
+      "first_scan": "2025-10-28 20:27:10",
+      "last_scan": "2025-10-28 20:27:10",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "xiaowuc2/ChatGPT-Python-Applications": {
+      "first_scan": "2025-10-28 20:27:33",
+      "last_scan": "2025-10-28 20:27:33",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "hoanpham17/text-to-sql-immobilien-search": {
+      "first_scan": "2025-10-28 20:27:44",
+      "last_scan": "2025-10-28 20:27:44",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "johunsang/test2": {
+      "first_scan": "2025-10-28 20:27:52",
+      "last_scan": "2025-10-28 20:27:52",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "Niranjan5168/EnginSync-Placement-preparation-for-Engineering-Students": {
+      "first_scan": "2025-10-28 20:43:14",
+      "last_scan": "2025-10-28 20:43:14",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "reecall/GraphTOD": {
+      "first_scan": "2025-10-28 20:43:45",
+      "last_scan": "2025-10-28 20:43:45",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:failed",
+      "scan_count": 1
+    },
+    "wsy258-strar/DocGPT": {
+      "first_scan": "2025-10-28 20:44:08",
+      "last_scan": "2025-10-28 20:44:08",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "ashmaresg/Auto-GPT": {
+      "first_scan": "2025-10-28 20:47:14",
+      "last_scan": "2025-10-28 20:47:14",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "FcoinCrypto/autogpt": {
+      "first_scan": "2025-10-28 20:47:31",
+      "last_scan": "2025-10-28 20:47:31",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "easyasme/Code_Readability": {
+      "first_scan": "2025-10-28 20:47:48",
+      "last_scan": "2025-10-28 20:47:48",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "aaaadigup/web_scr-chatbot-poc": {
+      "first_scan": "2025-10-28 20:48:04",
+      "last_scan": "2025-10-28 20:48:04",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "perpendicooler/LLM-app-using-LangChain": {
+      "first_scan": "2025-10-28 20:48:21",
+      "last_scan": "2025-10-28 20:48:21",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "q7950288/streamlit": {
+      "first_scan": "2025-10-28 20:48:37",
+      "last_scan": "2025-10-28 20:48:37",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "devolution007/AI-Chatbot": {
+      "first_scan": "2025-10-28 20:48:54",
+      "last_scan": "2025-10-28 20:48:54",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "AaravPilania/ai-chatbot": {
+      "first_scan": "2025-10-28 20:49:11",
+      "last_scan": "2025-10-28 20:49:11",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "brihijoshi/generation_helpers": {
+      "first_scan": "2025-10-28 20:49:27",
+      "last_scan": "2025-10-28 20:49:27",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "CristianoXico/mcp_br": {
+      "first_scan": "2025-10-28 20:49:44",
+      "last_scan": "2025-10-28 20:49:44",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "Yale-LILY/NLP4Code": {
+      "first_scan": "2025-10-28 20:50:00",
+      "last_scan": "2025-10-28 20:50:00",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "coleam00/Archon": {
+      "first_scan": "2025-10-28 20:50:17",
+      "last_scan": "2025-10-28 20:50:17",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "kodigitaccount/AGENTIC_AI": {
+      "first_scan": "2025-10-28 20:50:34",
+      "last_scan": "2025-10-28 20:50:34",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "hudsoncss/SFDCAudit": {
+      "first_scan": "2025-10-28 20:50:50",
+      "last_scan": "2025-10-28 20:50:50",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "AIMLDev726/jaygoga_orchestra": {
+      "first_scan": "2025-10-28 20:51:07",
+      "last_scan": "2025-10-28 20:51:07",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "ImprintLab/Medical-Graph-RAG": {
+      "first_scan": "2025-10-28 20:51:23",
+      "last_scan": "2025-10-28 20:51:23",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "parthmaheshwari/emerging-sectors-forecast": {
+      "first_scan": "2025-10-28 20:51:40",
+      "last_scan": "2025-10-28 20:51:40",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "uuu555552/ptocode": {
+      "first_scan": "2025-10-28 20:51:57",
+      "last_scan": "2025-10-28 20:51:57",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "GibsonAI/memori": {
+      "first_scan": "2025-10-28 20:52:13",
+      "last_scan": "2025-10-28 20:52:13",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "xcmt/ABC_report": {
+      "first_scan": "2025-10-28 20:52:30",
+      "last_scan": "2025-10-28 20:52:30",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "bxnlabs/litellm": {
+      "first_scan": "2025-10-28 20:52:47",
+      "last_scan": "2025-10-28 20:52:47",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "adrshkr/mcp_server_openai": {
+      "first_scan": "2025-10-28 20:53:03",
+      "last_scan": "2025-10-28 20:53:03",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "justinnk/text-to-crn": {
+      "first_scan": "2025-10-28 20:53:20",
+      "last_scan": "2025-10-28 20:53:20",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "hyChia88/MemoryCartography": {
+      "first_scan": "2025-10-28 20:53:36",
+      "last_scan": "2025-10-28 20:53:36",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "AdityaMitt11/chatbot": {
+      "first_scan": "2025-10-28 20:53:53",
+      "last_scan": "2025-10-28 20:53:53",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "RobHand27/AltCredit-HackIllinois-2025": {
+      "first_scan": "2025-10-28 20:54:09",
+      "last_scan": "2025-10-28 20:54:09",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "SinchanaVenkatesh/TalktronAI": {
+      "first_scan": "2025-10-28 20:54:26",
+      "last_scan": "2025-10-28 20:54:26",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "ASISys/Adrenaline": {
+      "first_scan": "2025-10-28 20:54:43",
+      "last_scan": "2025-10-28 20:54:43",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "swarmauri/swarmauri-sdk": {
+      "first_scan": "2025-10-28 20:54:59",
+      "last_scan": "2025-10-28 20:54:59",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "ivan-pua/pdf-rag-template": {
+      "first_scan": "2025-10-28 20:55:16",
+      "last_scan": "2025-10-28 20:55:16",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "khaoss85/AI-Team-Orchestrator": {
+      "first_scan": "2025-10-28 20:55:32",
+      "last_scan": "2025-10-28 20:55:32",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "renanmoretto/investidor-ia": {
+      "first_scan": "2025-10-28 20:55:49",
+      "last_scan": "2025-10-28 20:55:49",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "SanJerry007/nonebot-plugin-chatgpt-api": {
+      "first_scan": "2025-10-28 20:56:06",
+      "last_scan": "2025-10-28 20:56:06",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "Hubch/cad_recognition": {
+      "first_scan": "2025-10-28 20:56:22",
+      "last_scan": "2025-10-28 20:56:22",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "rllm-org/rllm": {
+      "first_scan": "2025-10-28 20:56:39",
+      "last_scan": "2025-10-28 20:56:39",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "AammarTufail/DSAAMP_2025": {
+      "first_scan": "2025-10-28 20:56:55",
+      "last_scan": "2025-10-28 20:56:55",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "yiouyou/RePolyA": {
+      "first_scan": "2025-10-28 20:57:12",
+      "last_scan": "2025-10-28 20:57:12",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "usGuri-Dufutti/usGuri_Dufutti-backend": {
+      "first_scan": "2025-10-28 20:57:29",
+      "last_scan": "2025-10-28 20:57:29",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "Mikanwolfe/Maple": {
+      "first_scan": "2025-10-28 20:57:45",
+      "last_scan": "2025-10-28 20:57:45",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "mcpflow/localmind": {
+      "first_scan": "2025-10-28 20:58:02",
+      "last_scan": "2025-10-28 20:58:02",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "Sasmitha6821/Kalix-Chatbot": {
+      "first_scan": "2025-10-28 20:58:18",
+      "last_scan": "2025-10-28 20:58:18",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "southriverai/srai-chat": {
+      "first_scan": "2025-10-28 20:58:35",
+      "last_scan": "2025-10-28 20:58:35",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "jtanaka104/openai_api_bot": {
+      "first_scan": "2025-10-28 20:58:52",
+      "last_scan": "2025-10-28 20:58:52",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "tml-epfl/long-is-more-for-alignment": {
+      "first_scan": "2025-10-28 20:59:08",
+      "last_scan": "2025-10-28 20:59:08",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "sneezeparty/soupy": {
+      "first_scan": "2025-10-28 20:59:25",
+      "last_scan": "2025-10-28 20:59:25",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "BitCodeHub/YappyAI": {
+      "first_scan": "2025-10-28 20:59:41",
+      "last_scan": "2025-10-28 20:59:41",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "syedahirafatima/CloneChat.ai": {
+      "first_scan": "2025-10-28 20:59:58",
+      "last_scan": "2025-10-28 20:59:58",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "TakanariShimbo/open-super-whisper-v2": {
+      "first_scan": "2025-10-28 21:00:15",
+      "last_scan": "2025-10-28 21:00:15",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "KaranShah1/HW_Manager-HW2": {
+      "first_scan": "2025-10-28 21:00:31",
+      "last_scan": "2025-10-28 21:00:31",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "NNDSrinivas/mentor_app": {
+      "first_scan": "2025-10-28 21:00:48",
+      "last_scan": "2025-10-28 21:00:48",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "AlessioChen/traish": {
+      "first_scan": "2025-10-28 21:01:04",
+      "last_scan": "2025-10-28 21:01:04",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "mharish27/Hazard-Free-Navigation": {
+      "first_scan": "2025-10-28 21:01:21",
+      "last_scan": "2025-10-28 21:01:21",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "pj-13-shukla/serp-clustering-app": {
+      "first_scan": "2025-10-28 21:01:37",
+      "last_scan": "2025-10-28 21:01:37",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "sssmile2yong/linebot": {
+      "first_scan": "2025-10-28 21:01:54",
+      "last_scan": "2025-10-28 21:01:54",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "LachinFernando/speech_therapist": {
+      "first_scan": "2025-10-28 21:02:11",
+      "last_scan": "2025-10-28 21:02:11",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "HealthifyMe/coralogix-mcp": {
+      "first_scan": "2025-10-28 21:02:27",
+      "last_scan": "2025-10-28 21:02:27",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "BarryYin/AlphaTo": {
+      "first_scan": "2025-10-28 21:02:44",
+      "last_scan": "2025-10-28 21:02:44",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "surajshivkumar/aiba-rag": {
+      "first_scan": "2025-10-28 21:03:00",
+      "last_scan": "2025-10-28 21:03:00",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
     }
   },
-  "total_scanned": 78,
-  "last_updated": "2025-10-28 18:31:05"
+  "total_scanned": 157,
+  "last_updated": "2025-10-28 21:03:00"
 }
