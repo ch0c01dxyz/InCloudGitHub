@@ -1917,8 +1917,50 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "DavidBarbosag/talleresAIAREP": {
+      "first_scan": "2025-10-31 23:07:19",
+      "last_scan": "2025-10-31 23:07:19",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "shaurya1negi/Scheme-Saathi": {
+      "first_scan": "2025-10-31 23:48:07",
+      "last_scan": "2025-10-31 23:48:07",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "leonardoCottet/openai": {
+      "first_scan": "2025-10-31 23:48:24",
+      "last_scan": "2025-10-31 23:48:24",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "wagnerww/LangChain-RAG-LLM-GPT": {
+      "first_scan": "2025-10-31 23:48:40",
+      "last_scan": "2025-10-31 23:48:40",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "mikaelzzzz/AgenteVendas_Karol": {
+      "first_scan": "2025-10-31 23:48:57",
+      "last_scan": "2025-10-31 23:48:57",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
+    },
+    "segadamyan/agentic-asr": {
+      "first_scan": "2025-10-31 23:49:14",
+      "last_scan": "2025-10-31 23:49:14",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:no-access",
+      "scan_count": 1
     }
   },
-  "total_scanned": 274,
-  "last_updated": "2025-10-31 12:47:14"
+  "total_scanned": 280,
+  "last_updated": "2025-10-31 23:49:14"
 }
