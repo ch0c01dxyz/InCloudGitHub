@@ -874,8 +874,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "swarmauri/swarmauri-sdk": {
+      "first_scan": "2025-11-12 00:33:00",
+      "last_scan": "2025-11-12 00:33:00",
+      "findings_count": 4,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 125,
-  "last_updated": "2025-11-11 13:23:39"
+  "total_scanned": 126,
+  "last_updated": "2025-11-12 00:33:00"
 }
