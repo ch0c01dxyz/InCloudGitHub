@@ -1994,8 +1994,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "lorenzorheinicke/youtube_extractor": {
+      "first_scan": "2025-11-15 00:40:53",
+      "last_scan": "2025-11-15 00:40:53",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 285,
-  "last_updated": "2025-11-15 00:06:39"
+  "total_scanned": 286,
+  "last_updated": "2025-11-15 00:40:53"
 }
