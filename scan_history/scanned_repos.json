@@ -2211,8 +2211,29 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "AngieRamosCortes/JupyterGuides": {
+      "first_scan": "2025-11-18 12:55:51",
+      "last_scan": "2025-11-18 12:55:51",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "ProjectVaquitai/Vaquitai": {
+      "first_scan": "2025-11-18 13:04:06",
+      "last_scan": "2025-11-18 13:04:06",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects:failed",
+      "scan_count": 1
+    },
+    "Weizhe1215/Paipai_AI_chat": {
+      "first_scan": "2025-11-18 13:04:22",
+      "last_scan": "2025-11-18 13:04:22",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 316,
-  "last_updated": "2025-11-18 02:07:45"
+  "total_scanned": 319,
+  "last_updated": "2025-11-18 13:04:22"
 }
