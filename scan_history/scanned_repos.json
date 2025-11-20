@@ -2267,8 +2267,15 @@
       "findings_count": 2,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "Iateam6/algoflow": {
+      "first_scan": "2025-11-20 01:41:38",
+      "last_scan": "2025-11-20 01:41:38",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 324,
-  "last_updated": "2025-11-19 23:19:26"
+  "total_scanned": 325,
+  "last_updated": "2025-11-20 01:41:38"
 }
