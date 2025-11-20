@@ -2274,8 +2274,22 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "YannHicke/AI_Innovation_Lab_Grading": {
+      "first_scan": "2025-11-20 12:31:41",
+      "last_scan": "2025-11-20 12:31:41",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "mohamed-derardja/optistage": {
+      "first_scan": "2025-11-20 13:28:38",
+      "last_scan": "2025-11-20 13:28:38",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 325,
-  "last_updated": "2025-11-20 01:41:38"
+  "total_scanned": 327,
+  "last_updated": "2025-11-20 13:28:38"
 }
