@@ -2379,8 +2379,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "DunsinK/67Security": {
+      "first_scan": "2025-11-21 23:42:48",
+      "last_scan": "2025-11-21 23:42:48",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 340,
-  "last_updated": "2025-11-21 12:47:36"
+  "total_scanned": 341,
+  "last_updated": "2025-11-21 23:42:48"
 }
