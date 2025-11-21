@@ -2372,8 +2372,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects:no-access",
       "scan_count": 1
+    },
+    "MKcodeshere/Text-to-SQL---Using-SDE-SQL-Method": {
+      "first_scan": "2025-11-21 12:47:36",
+      "last_scan": "2025-11-21 12:47:36",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 339,
-  "last_updated": "2025-11-21 01:32:09"
+  "total_scanned": 340,
+  "last_updated": "2025-11-21 12:47:36"
 }
