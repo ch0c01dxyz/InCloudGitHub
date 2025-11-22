@@ -2386,8 +2386,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "xiaket/etc": {
+      "first_scan": "2025-11-22 23:03:10",
+      "last_scan": "2025-11-22 23:03:10",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 341,
-  "last_updated": "2025-11-21 23:42:48"
+  "total_scanned": 342,
+  "last_updated": "2025-11-22 23:03:10"
 }
