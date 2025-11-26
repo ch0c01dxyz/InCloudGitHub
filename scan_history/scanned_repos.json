@@ -2435,8 +2435,15 @@
       "findings_count": 2,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "microsoft/MMCTAgent": {
+      "first_scan": "2025-11-26 12:36:54",
+      "last_scan": "2025-11-26 12:36:54",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 348,
-  "last_updated": "2025-11-25 01:19:29"
+  "total_scanned": 349,
+  "last_updated": "2025-11-26 12:36:54"
 }
