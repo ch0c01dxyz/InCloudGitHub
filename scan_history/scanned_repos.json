@@ -2463,8 +2463,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "DrewHouchens13/LanguageLearningPlatform": {
+      "first_scan": "2025-11-27 23:04:52",
+      "last_scan": "2025-11-27 23:04:52",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 352,
-  "last_updated": "2025-11-27 00:34:38"
+  "total_scanned": 353,
+  "last_updated": "2025-11-27 23:04:52"
 }
