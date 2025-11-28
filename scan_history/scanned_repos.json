@@ -2547,8 +2547,22 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "Agent-CI/agentexec": {
+      "first_scan": "2025-11-28 23:02:14",
+      "last_scan": "2025-11-28 23:02:14",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "braytonstafford/grok_conversation": {
+      "first_scan": "2025-11-28 23:02:43",
+      "last_scan": "2025-11-28 23:02:43",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 364,
-  "last_updated": "2025-11-28 12:48:02"
+  "total_scanned": 366,
+  "last_updated": "2025-11-28 23:02:43"
 }
