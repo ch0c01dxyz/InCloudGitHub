@@ -2512,8 +2512,43 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects:no-access",
       "scan_count": 1
+    },
+    "GibsonAI/Memori": {
+      "first_scan": "2025-11-28 12:36:15",
+      "last_scan": "2025-11-28 12:36:15",
+      "findings_count": 21,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "syedahirafatima/CloneChat.ai": {
+      "first_scan": "2025-11-28 12:36:22",
+      "last_scan": "2025-11-28 12:36:22",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "HaotianZhai/EquivaFormulation": {
+      "first_scan": "2025-11-28 12:36:58",
+      "last_scan": "2025-11-28 12:36:58",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "road-core/service": {
+      "first_scan": "2025-11-28 12:46:45",
+      "last_scan": "2025-11-28 12:46:45",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "aryan877/sre-sentinel": {
+      "first_scan": "2025-11-28 12:48:02",
+      "last_scan": "2025-11-28 12:48:02",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 359,
-  "last_updated": "2025-11-28 01:11:37"
+  "total_scanned": 364,
+  "last_updated": "2025-11-28 12:48:02"
 }
