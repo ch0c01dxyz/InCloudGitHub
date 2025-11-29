@@ -2561,8 +2561,22 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "tondevai4/sophiafinal": {
+      "first_scan": "2025-11-29 23:03:23",
+      "last_scan": "2025-11-29 23:03:23",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "jlh425/Archon": {
+      "first_scan": "2025-11-29 23:15:18",
+      "last_scan": "2025-11-29 23:15:18",
+      "findings_count": 1,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 366,
-  "last_updated": "2025-11-28 23:02:43"
+  "total_scanned": 368,
+  "last_updated": "2025-11-29 23:15:18"
 }
