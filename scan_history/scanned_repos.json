@@ -1560,8 +1560,22 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects:no-access",
       "scan_count": 1
+    },
+    "Moemu/MuiceBot": {
+      "first_scan": "2025-12-01 23:03:18",
+      "last_scan": "2025-12-01 23:03:18",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "LingmaTongyi/Lingma-SWE-GPT": {
+      "first_scan": "2025-12-02 00:42:33",
+      "last_scan": "2025-12-02 00:42:33",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 223,
-  "last_updated": "2025-12-01 13:22:57"
+  "total_scanned": 225,
+  "last_updated": "2025-12-02 00:42:33"
 }
