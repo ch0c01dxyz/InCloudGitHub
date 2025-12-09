@@ -2232,8 +2232,57 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects:no-access",
       "scan_count": 1
+    },
+    "johunsang/test2": {
+      "first_scan": "2025-12-09 12:33:41",
+      "last_scan": "2025-12-09 12:33:41",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "parthibansivasubramaniam/Streamlit": {
+      "first_scan": "2025-12-09 12:33:45",
+      "last_scan": "2025-12-09 12:33:45",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "karlkalvin/crypto": {
+      "first_scan": "2025-12-09 12:33:46",
+      "last_scan": "2025-12-09 12:33:46",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "shintairiku/marketing-automation": {
+      "first_scan": "2025-12-09 12:42:15",
+      "last_scan": "2025-12-09 12:42:15",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "zht7063/agenticRAG": {
+      "first_scan": "2025-12-09 12:43:23",
+      "last_scan": "2025-12-09 12:43:23",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "yoohyunseog/nbw_wfa-chatbot": {
+      "first_scan": "2025-12-09 12:43:29",
+      "last_scan": "2025-12-09 12:43:29",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "AshBalbz/Translide": {
+      "first_scan": "2025-12-09 12:58:53",
+      "last_scan": "2025-12-09 12:58:53",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 319,
-  "last_updated": "2025-12-09 01:28:00"
+  "total_scanned": 326,
+  "last_updated": "2025-12-09 12:58:53"
 }
