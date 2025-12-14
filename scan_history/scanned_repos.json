@@ -2477,8 +2477,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "Wisantik/StudyClickBot": {
+      "first_scan": "2025-12-14 01:07:00",
+      "last_scan": "2025-12-14 01:07:00",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 354,
-  "last_updated": "2025-12-13 23:20:48"
+  "total_scanned": 355,
+  "last_updated": "2025-12-14 01:07:00"
 }
