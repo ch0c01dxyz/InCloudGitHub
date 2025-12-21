@@ -2638,8 +2638,22 @@
       "findings_count": 1,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "Sok0ru/Ai-fit-trainer": {
+      "first_scan": "2025-12-21 12:30:36",
+      "last_scan": "2025-12-21 12:30:36",
+      "findings_count": 1,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
+    },
+    "vikram17036/Rand-o-mania-testing": {
+      "first_scan": "2025-12-21 13:00:53",
+      "last_scan": "2025-12-21 13:00:53",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 377,
-  "last_updated": "2025-12-20 23:22:04"
+  "total_scanned": 379,
+  "last_updated": "2025-12-21 13:00:53"
 }
