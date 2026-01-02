@@ -2092,8 +2092,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "rezoanhoque/chatbot-gatekeeper": {
+      "first_scan": "2026-01-02 23:57:04",
+      "last_scan": "2026-01-02 23:57:04",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 299,
-  "last_updated": "2026-01-02 12:32:21"
+  "total_scanned": 300,
+  "last_updated": "2026-01-02 23:57:04"
 }
