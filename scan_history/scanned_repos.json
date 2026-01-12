@@ -2253,8 +2253,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "Hikerti/qik-test-qa-server": {
+      "first_scan": "2026-01-12 02:06:51",
+      "last_scan": "2026-01-12 02:06:51",
+      "findings_count": 2,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 322,
-  "last_updated": "2026-01-11 12:36:56"
+  "total_scanned": 323,
+  "last_updated": "2026-01-12 02:06:51"
 }
