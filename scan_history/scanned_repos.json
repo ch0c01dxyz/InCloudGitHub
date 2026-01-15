@@ -2344,8 +2344,15 @@
       "findings_count": 0,
       "scan_type": "auto:ai-projects",
       "scan_count": 1
+    },
+    "Serverless-Devs/agentrun-sdk-python": {
+      "first_scan": "2026-01-15 12:39:43",
+      "last_scan": "2026-01-15 12:39:43",
+      "findings_count": 0,
+      "scan_type": "auto:ai-projects",
+      "scan_count": 1
     }
   },
-  "total_scanned": 335,
-  "last_updated": "2026-01-14 23:12:59"
+  "total_scanned": 336,
+  "last_updated": "2026-01-15 12:39:43"
 }
