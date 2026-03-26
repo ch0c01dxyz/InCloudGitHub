@@ -1,0 +1,27 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║          🔒 InCloud GitHub Scanner - AI API Key Scan Report                   ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📋 Scan Information
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  🎯 Scan Type:     🤖 Auto Search AI Projects
+  ⏱️  Start Time:    2026-03-26 01:53:22
+  ⏱️  End Time:      2026-03-26 01:53:29
+  ⏳ Duration:      7s
+  ✅ Issues Found:  0
+  📦 Repositories:  0
+
+✅ No sensitive information leakage detected!
+
+Scan completed, all clear.
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                                                                              ║
+║                 ✅ Report Generated - Please Address Issues Promptly          ║
+║                                                                              ║
+║  Generated: 2026-03-26 01:53:29                                              ║
+║  Location: ./scan_reports/scan_report_20260326_015329.txt                    ║
+║                                                                              ║
+╚══════════════════════════════════════════════════════════════════════════════╝
